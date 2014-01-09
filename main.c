@@ -3,10 +3,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the license.txt file.
  */
-/** @file
- * @brief Watchdog, System Off and RESETREAS example
+/*
+ * This example demonstrates the use of the watchdog, System Off and RESETREAS. 
  *
- * This example demonstrates the use of the watchdog, System Off and displays RESETREAS. 
  * LED_0 (pin 8) is toggled slowly at startup to show that the device is starting. When 
  * the device is in the main loop LED_0 will flash faster. Watchdog is set to 3 seconds 
  * and will cause a reset after that time. The watchdog can be reloaded by pressing BUTTON_0.
@@ -32,9 +31,6 @@
  * To see what peripherals are reset when performing different resets, see section 11.1.6.8
  * in the nRF51 Reference Manual v2.0.
  *
- * This example is tested with nRF51822 QFAA G0 and nRF51 SDK v5.1.0
- *
- * @image html example_board_setup_a.png "Use board setup A for this example."
  */
 
 #ifndef BOARD_NRF6310
