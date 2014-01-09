@@ -63,27 +63,27 @@
  */
 static void gpio_init(void)
 {
-	//Configure LEDs and button
+    //Configure LEDs and button
   nrf_gpio_cfg_input(BUTTON_0, NRF_GPIO_PIN_NOPULL);
-	nrf_gpio_cfg_input(BUTTON_1, NRF_GPIO_PIN_NOPULL);
-	nrf_gpio_cfg_input(BUTTON_2, NRF_GPIO_PIN_NOPULL);	
-	nrf_gpio_port_dir_set(NRF_GPIO_PORT_SELECT_PORT1, NRF_GPIO_PORT_DIR_OUTPUT);
+    nrf_gpio_cfg_input(BUTTON_1, NRF_GPIO_PIN_NOPULL);
+    nrf_gpio_cfg_input(BUTTON_2, NRF_GPIO_PIN_NOPULL);    
+    nrf_gpio_port_dir_set(NRF_GPIO_PORT_SELECT_PORT1, NRF_GPIO_PORT_DIR_OUTPUT);
 
-	// Configure BUTTON_3 with SENSE enabled (not possible using nrf_gpio.h)
-	NRF_GPIO->PIN_CNF[BUTTON_3] = (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos)
-														 | (GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos)
-														 | (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos)
-														 | (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos)
-														 | (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos);	
+    // Configure BUTTON_3 with SENSE enabled (not possible using nrf_gpio.h)
+    NRF_GPIO->PIN_CNF[BUTTON_3] = (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos)
+                                                         | (GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos)
+                                                         | (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos)
+                                                         | (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos)
+                                                         | (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos);    
 }
 
 static void gpiote_init(void)
 {
-	//Configure GPIOTE channel to toggle pin
+    //Configure GPIOTE channel to toggle pin
   NRF_GPIOTE->CONFIG[0] =  (GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos)
               | (BUTTON_0 << GPIOTE_CONFIG_PSEL_Pos)
-              | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);	
-	
+              | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);    
+    
   // Enable GPIOTE interrupt:
   NVIC_EnableIRQ(GPIOTE_IRQn);
   NRF_GPIOTE->INTENSET = GPIOTE_INTENSET_IN0_Set << GPIOTE_INTENSET_IN0_Pos;
@@ -100,15 +100,15 @@ void GPIOTE_IRQHandler(void)
     NRF_GPIOTE->EVENTS_IN[0] = 0;
   }
   nrf_gpio_pin_toggle(LED_0);
-	NRF_WDT->RR[0] = 0x6E524635;  //Reload watchdog register 0
+    NRF_WDT->RR[0] = 0x6E524635;  //Reload watchdog register 0
 }
 
 void wdt_init(void)
 {
-	NRF_WDT->CONFIG = (WDT_CONFIG_HALT_Pause << WDT_CONFIG_HALT_Pos) | ( WDT_CONFIG_SLEEP_Run << WDT_CONFIG_SLEEP_Pos);
-	NRF_WDT->CRV = 3*32768;   //ca 3 sek. timout
-	NRF_WDT->RREN |= WDT_RREN_RR0_Msk;  //Enable reload register 0
-	NRF_WDT->TASKS_START = 1;
+    NRF_WDT->CONFIG = (WDT_CONFIG_HALT_Pause << WDT_CONFIG_HALT_Pos) | ( WDT_CONFIG_SLEEP_Run << WDT_CONFIG_SLEEP_Pos);
+    NRF_WDT->CRV = 3*32768;   //ca 3 sek. timout
+    NRF_WDT->RREN |= WDT_RREN_RR0_Msk;  //Enable reload register 0
+    NRF_WDT->TASKS_START = 1;
 }
 
 /**
@@ -117,50 +117,50 @@ void wdt_init(void)
  */
 int main(void)
 {
-	int i;
-	
+    int i;
+    
   gpio_init();
-	gpiote_init();
-	wdt_init();
-	
-	//Write the value of RESETREAS to pins 9-15 (LEDs 1-7)
-	nrf_gpio_pin_write(LED_1, NRF_POWER->RESETREAS & RESET_FROM_PIN);                //Bit A in RESETREAS
-	nrf_gpio_pin_write(LED_2, NRF_POWER->RESETREAS & RESET_FROM_WDT);                //Bit B in RESETREAS
-	nrf_gpio_pin_write(LED_3, NRF_POWER->RESETREAS & RESET_FROM_SOFTWARE);           //Bit C in RESETREAS
-	nrf_gpio_pin_write(LED_4, NRF_POWER->RESETREAS & RESET_FROM_LOCKUP);             //Bit D in RESETREAS
-	nrf_gpio_pin_write(LED_5, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_GPIO);    //Bit E in RESETREAS
-	nrf_gpio_pin_write(LED_6, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_LPCOMP);  //Bit F in RESETREAS
-	nrf_gpio_pin_write(LED_7, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_DEBUG);   //Bit G in RESETREAS	
-	
-	NRF_POWER->RESETREAS = 0xFFFFFFFF;   //Clear the RESETREAS register
-	
-	for(i=0;i<STARTUP_TOGGLE_ITERATIONS;i++)
-	{
-		nrf_gpio_pin_toggle(LED_0);
-		nrf_delay_us(DELAY);
-	}
+    gpiote_init();
+    wdt_init();
+    
+    //Write the value of RESETREAS to pins 9-15 (LEDs 1-7)
+    nrf_gpio_pin_write(LED_1, NRF_POWER->RESETREAS & RESET_FROM_PIN);                //Bit A in RESETREAS
+    nrf_gpio_pin_write(LED_2, NRF_POWER->RESETREAS & RESET_FROM_WDT);                //Bit B in RESETREAS
+    nrf_gpio_pin_write(LED_3, NRF_POWER->RESETREAS & RESET_FROM_SOFTWARE);           //Bit C in RESETREAS
+    nrf_gpio_pin_write(LED_4, NRF_POWER->RESETREAS & RESET_FROM_LOCKUP);             //Bit D in RESETREAS
+    nrf_gpio_pin_write(LED_5, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_GPIO);    //Bit E in RESETREAS
+    nrf_gpio_pin_write(LED_6, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_LPCOMP);  //Bit F in RESETREAS
+    nrf_gpio_pin_write(LED_7, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_DEBUG);   //Bit G in RESETREAS    
+    
+    NRF_POWER->RESETREAS = 0xFFFFFFFF;   //Clear the RESETREAS register
+    
+    for(i=0;i<STARTUP_TOGGLE_ITERATIONS;i++)
+    {
+        nrf_gpio_pin_toggle(LED_0);
+        nrf_delay_us(DELAY);
+    }
 
   while (true)
   {
-		//Blink LED 0 fast until watchdog triggers reset
-		nrf_gpio_pin_toggle(LED_0);
-		nrf_delay_us(DELAY/3);
-		
-		// If BUTTON_2 is pressed.. enter System Off mode
-		if(nrf_gpio_pin_read(BUTTON_2) == BTN_PRESSED)
-		{
-				// Clear PORT 1 (pins 8-15)
-				nrf_gpio_port_clear(NRF_GPIO_PORT_SELECT_PORT1, 0xFF);
-			
-				// Enter system OFF. After wakeup the chip will be reset, and the program will run from the top 
-				NRF_POWER->SYSTEMOFF = 1;
-		}
-		
-		// If BUTTON_1 is pressed.. soft-reset
-		if(nrf_gpio_pin_read(BUTTON_1) == BTN_PRESSED)
-		{
-			NVIC_SystemReset();
-		}
+        //Blink LED 0 fast until watchdog triggers reset
+        nrf_gpio_pin_toggle(LED_0);
+        nrf_delay_us(DELAY/3);
+        
+        // If BUTTON_2 is pressed.. enter System Off mode
+        if(nrf_gpio_pin_read(BUTTON_2) == BTN_PRESSED)
+        {
+                // Clear PORT 1 (pins 8-15)
+                nrf_gpio_port_clear(NRF_GPIO_PORT_SELECT_PORT1, 0xFF);
+            
+                // Enter system OFF. After wakeup the chip will be reset, and the program will run from the top 
+                NRF_POWER->SYSTEMOFF = 1;
+        }
+        
+        // If BUTTON_1 is pressed.. soft-reset
+        if(nrf_gpio_pin_read(BUTTON_1) == BTN_PRESSED)
+        {
+            NVIC_SystemReset();
+        }
   }
 }
 
