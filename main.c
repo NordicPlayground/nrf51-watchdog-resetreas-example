@@ -58,23 +58,16 @@
 #define STARTUP_TOGGLE_ITERATIONS       7
 
 /**
- * Configures pin 0 for input and pin 8 for output and
- * configures GPIOTE to give interrupt on BUTTON_0 (pin 0) change.
+ * Configures LEDs and buttons from boards.h as outputs and inputs. 
  */
 static void gpio_init(void)
 {
-    //Configure LEDs and button
     nrf_gpio_cfg_input(BUTTON_0, NRF_GPIO_PIN_NOPULL);
     nrf_gpio_cfg_input(BUTTON_1, NRF_GPIO_PIN_NOPULL);
-    nrf_gpio_cfg_input(BUTTON_2, NRF_GPIO_PIN_NOPULL);    
-    nrf_gpio_port_dir_set(NRF_GPIO_PORT_SELECT_PORT1, NRF_GPIO_PORT_DIR_OUTPUT);
-
-    // Configure BUTTON_3 with SENSE enabled (not possible using nrf_gpio.h)
-    NRF_GPIO->PIN_CNF[BUTTON_3] = (GPIO_PIN_CNF_SENSE_Low << GPIO_PIN_CNF_SENSE_Pos)
-                                                         | (GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos)
-                                                         | (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos)
-                                                         | (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos)
-                                                         | (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos);    
+    nrf_gpio_cfg_input(BUTTON_2, NRF_GPIO_PIN_NOPULL);	
+    nrf_gpio_cfg_sense_input(BUTTON_3, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
+    
+    nrf_gpio_range_cfg_output(LED_0, LED_7);
 }
 
 static void gpiote_init(void)
