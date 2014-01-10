@@ -33,10 +33,6 @@
  *
  */
 
-#ifndef BOARD_NRF6310
-#define BOARD_NRF6310
-#endif
-
 #include <stdbool.h>
 #include "nrf.h"
 #include "nrf_gpio.h"
@@ -55,6 +51,7 @@
 #define WAKEUP_BUTTON          BUTTON_3
 
 #define STARTUP_TOGGLE_ITERATIONS       7
+
 
 /**
  * Configures LEDs and buttons from boards.h as outputs and inputs. 
