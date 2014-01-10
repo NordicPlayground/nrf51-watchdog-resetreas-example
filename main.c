@@ -47,6 +47,8 @@
 #define BTN_PRESSED    0
 #define BTN_RELEASED   1
 
+#define WATCHDOG_RELOAD_CONSTANT 0x6E524635
+
 #define RESET_FROM_PIN                  0x00000001
 #define RESET_FROM_WDT                  0x00000002
 #define RESET_FROM_SOFTWARE             0x00000004
@@ -70,17 +72,30 @@ static void gpio_init(void)
     nrf_gpio_range_cfg_output(LED_0, LED_7);
 }
 
+
 static void gpiote_init(void)
 {
-    //Configure GPIOTE channel to toggle pin
-    NRF_GPIOTE->CONFIG[0] =  (GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos)
-              | (BUTTON_0 << GPIOTE_CONFIG_PSEL_Pos)
-              | (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);    
+    //Configure GPIOTE channel to trigger on BUTTON_0 toggle.
+    NRF_GPIOTE->CONFIG[0] = (GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) |
+                            (BUTTON_0 << GPIOTE_CONFIG_PSEL_Pos) |
+                            (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);    
 
-    // Enable GPIOTE interrupt:
-    NVIC_EnableIRQ(GPIOTE_IRQn);
     NRF_GPIOTE->INTENSET = GPIOTE_INTENSET_IN0_Set << GPIOTE_INTENSET_IN0_Pos;
+    NVIC_EnableIRQ(GPIOTE_IRQn);
 }
+
+
+
+void wdt_init(void)
+{
+    NRF_WDT->CONFIG = (WDT_CONFIG_HALT_Pause << WDT_CONFIG_HALT_Pos) | 
+                      (WDT_CONFIG_SLEEP_Run << WDT_CONFIG_SLEEP_Pos);
+                      
+    NRF_WDT->CRV = 3*32768;   //ca 3 sec. timout
+    NRF_WDT->RREN |= WDT_RREN_RR0_Msk;  //Enable reload register 0
+    NRF_WDT->TASKS_START = 1;
+}
+
 
 /** GPIOTE interrupt handler.
  * Triggered on BUTTON_0 (pin 0) change
@@ -91,18 +106,13 @@ void GPIOTE_IRQHandler(void)
     if ((NRF_GPIOTE->EVENTS_IN[0] == 1) && (NRF_GPIOTE->INTENSET & GPIOTE_INTENSET_IN0_Msk))
     {
         NRF_GPIOTE->EVENTS_IN[0] = 0;
+        
+        NRF_WDT->RR[0] = WATCHDOG_RELOAD_CONSTANT; 
+        
+        nrf_gpio_pin_toggle(LED_0);
     }
-    nrf_gpio_pin_toggle(LED_0);
-    NRF_WDT->RR[0] = 0x6E524635;  //Reload watchdog register 0
 }
 
-void wdt_init(void)
-{
-    NRF_WDT->CONFIG = (WDT_CONFIG_HALT_Pause << WDT_CONFIG_HALT_Pos) | ( WDT_CONFIG_SLEEP_Run << WDT_CONFIG_SLEEP_Pos);
-    NRF_WDT->CRV = 3*32768;   //ca 3 sek. timout
-    NRF_WDT->RREN |= WDT_RREN_RR0_Msk;  //Enable reload register 0
-    NRF_WDT->TASKS_START = 1;
-}
 
 /**
  * main function
