@@ -8,12 +8,12 @@
  *
  * LED_0 (pin 8) is toggled slowly at startup to show that the device is starting. When 
  * the device is in the main loop LED_0 will flash faster. Watchdog is set to 3 seconds 
- * and will cause a reset after that time. The watchdog can be reloaded by pressing BUTTON_0.
+ * and will cause a reset after that time. The watchdog can be reloaded by pressing WATCHDOG_RELOAD_BUTTON.
  * 
- * Software reset is performed with pressing BUTTON_1 (pin 1).
+ * Software reset is performed with pressing SOFTWARE_RESET_BUTTON (pin 1).
  *
- * The device is put into System Off low power mode when button_2 (pin 2) is pressed 
- * and wakes up from System off when button 3 (pin 3) is pressed. Led 0 (pin 8) is blinking 
+ * The device is put into System Off low power mode when SYSTEM_OFF_BUTTON (pin 2) is pressed 
+ * and wakes up from System off when WAKEUP_BUTTON (pin 3) is pressed. Led 0 (pin 8) is blinking 
  * when the device is active but turns off when the device enters System Off mode.
  * After flashing this program, the nRF51 will stay in debug mode. When in debug mode, System
  * Off will be emulated and LED_0 will continue blinking since the main loop will be active.
@@ -49,6 +49,11 @@
 
 #define WATCHDOG_RELOAD_CONSTANT 0x6E524635
 
+#define WATCHDOG_RELOAD_BUTTON BUTTON_0
+#define SOFTWARE_RESET_BUTTON  BUTTON_1
+#define SYSTEM_OFF_BUTTON      BUTTON_2
+#define WAKEUP_BUTTON          BUTTON_3
+
 #define RESET_FROM_PIN                  0x00000001
 #define RESET_FROM_WDT                  0x00000002
 #define RESET_FROM_SOFTWARE             0x00000004
@@ -64,10 +69,10 @@
  */
 static void gpio_init(void)
 {
-    nrf_gpio_cfg_input(BUTTON_0, NRF_GPIO_PIN_NOPULL);
-    nrf_gpio_cfg_input(BUTTON_1, NRF_GPIO_PIN_NOPULL);
-    nrf_gpio_cfg_input(BUTTON_2, NRF_GPIO_PIN_NOPULL);	
-    nrf_gpio_cfg_sense_input(BUTTON_3, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_input(WATCHDOG_RELOAD_BUTTON, NRF_GPIO_PIN_NOPULL);
+    nrf_gpio_cfg_input(SOFTWARE_RESET_BUTTON, NRF_GPIO_PIN_NOPULL);
+    nrf_gpio_cfg_input(SYSTEM_OFF_BUTTON, NRF_GPIO_PIN_NOPULL);	
+    nrf_gpio_cfg_sense_input(WAKEUP_BUTTON, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
     
     nrf_gpio_range_cfg_output(LED_0, LED_7);
 }
@@ -75,9 +80,9 @@ static void gpio_init(void)
 
 static void gpiote_init(void)
 {
-    //Configure GPIOTE channel to trigger on BUTTON_0 toggle.
+    //Configure GPIOTE channel to trigger on WATCHDOG_RELOAD_BUTTON toggle.
     NRF_GPIOTE->CONFIG[0] = (GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos) |
-                            (BUTTON_0 << GPIOTE_CONFIG_PSEL_Pos) |
+                            (WATCHDOG_RELOAD_BUTTON << GPIOTE_CONFIG_PSEL_Pos) |
                             (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos);    
 
     NRF_GPIOTE->INTENSET = GPIOTE_INTENSET_IN0_Set << GPIOTE_INTENSET_IN0_Pos;
@@ -98,7 +103,7 @@ void wdt_init(void)
 
 
 /** GPIOTE interrupt handler.
- * Triggered on BUTTON_0 (pin 0) change
+ * Triggered on WATCHDOG_RELOAD_BUTTON change
  */
 void GPIOTE_IRQHandler(void)
 {
@@ -149,8 +154,8 @@ int main(void)
         nrf_gpio_pin_toggle(LED_0);
         nrf_delay_us(DELAY/3);
 
-        // If BUTTON_2 is pressed.. enter System Off mode
-        if(nrf_gpio_pin_read(BUTTON_2) == BTN_PRESSED)
+        // If SYSTEM_OFF_BUTTON is pressed.. enter System Off mode
+        if(nrf_gpio_pin_read(SYSTEM_OFF_BUTTON) == BTN_PRESSED)
         {
             // Clear PORT 1 (pins 8-15)
             nrf_gpio_port_clear(NRF_GPIO_PORT_SELECT_PORT1, 0xFF);
@@ -159,8 +164,8 @@ int main(void)
             NRF_POWER->SYSTEMOFF = 1;
         }
 
-        // If BUTTON_1 is pressed.. soft-reset
-        if(nrf_gpio_pin_read(BUTTON_1) == BTN_PRESSED)
+        // If SOFTWARE_RESET_BUTTON is pressed.. soft-reset
+        if(nrf_gpio_pin_read(SOFTWARE_RESET_BUTTON) == BTN_PRESSED)
         {
             NVIC_SystemReset();
         }
