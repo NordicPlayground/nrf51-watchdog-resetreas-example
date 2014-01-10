@@ -54,14 +54,6 @@
 #define SYSTEM_OFF_BUTTON      BUTTON_2
 #define WAKEUP_BUTTON          BUTTON_3
 
-#define RESET_FROM_PIN                  0x00000001
-#define RESET_FROM_WDT                  0x00000002
-#define RESET_FROM_SOFTWARE             0x00000004
-#define RESET_FROM_LOCKUP               0x00000008
-#define RESET_FROM_SYSTEM_OFF_GPIO      0x00010000
-#define RESET_FROM_SYSTEM_OFF_LPCOMP    0x00020000
-#define RESET_FROM_SYSTEM_OFF_DEBUG     0x00040000
-
 #define STARTUP_TOGGLE_ITERATIONS       7
 
 /**
@@ -132,13 +124,13 @@ int main(void)
     wdt_init();
 
     //Write the value of RESETREAS to pins 9-15 (LEDs 1-7)
-    nrf_gpio_pin_write(LED_1, NRF_POWER->RESETREAS & RESET_FROM_PIN);                //Bit A in RESETREAS
-    nrf_gpio_pin_write(LED_2, NRF_POWER->RESETREAS & RESET_FROM_WDT);                //Bit B in RESETREAS
-    nrf_gpio_pin_write(LED_3, NRF_POWER->RESETREAS & RESET_FROM_SOFTWARE);           //Bit C in RESETREAS
-    nrf_gpio_pin_write(LED_4, NRF_POWER->RESETREAS & RESET_FROM_LOCKUP);             //Bit D in RESETREAS
-    nrf_gpio_pin_write(LED_5, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_GPIO);    //Bit E in RESETREAS
-    nrf_gpio_pin_write(LED_6, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_LPCOMP);  //Bit F in RESETREAS
-    nrf_gpio_pin_write(LED_7, NRF_POWER->RESETREAS & RESET_FROM_SYSTEM_OFF_DEBUG);   //Bit G in RESETREAS    
+    nrf_gpio_pin_write(LED_1, NRF_POWER->RESETREAS & POWER_RESETREAS_RESETPIN_Msk); //Bit A in RESETREAS
+    nrf_gpio_pin_write(LED_2, NRF_POWER->RESETREAS & POWER_RESETREAS_DOG_Msk);      //Bit B in RESETREAS
+    nrf_gpio_pin_write(LED_3, NRF_POWER->RESETREAS & POWER_RESETREAS_SREQ_Msk);     //Bit C in RESETREAS
+    nrf_gpio_pin_write(LED_4, NRF_POWER->RESETREAS & POWER_RESETREAS_LOCKUP_Msk);   //Bit D in RESETREAS
+    nrf_gpio_pin_write(LED_5, NRF_POWER->RESETREAS & POWER_RESETREAS_OFF_Msk);      //Bit E in RESETREAS
+    nrf_gpio_pin_write(LED_6, NRF_POWER->RESETREAS & POWER_RESETREAS_LPCOMP_Msk);   //Bit F in RESETREAS
+    nrf_gpio_pin_write(LED_7, NRF_POWER->RESETREAS & POWER_RESETREAS_DIF_Msk);      //Bit G in RESETREAS    
 
     NRF_POWER->RESETREAS = 0xFFFFFFFF;   //Clear the RESETREAS register
 
