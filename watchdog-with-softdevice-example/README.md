@@ -1,4 +1,4 @@
-nrf51-watchdog-resetreas-example
+watchdog-with-softdevice-example
 ==================
 
  This file shows watchdog functionality with the softdevice enabled.
@@ -12,8 +12,6 @@ Requirements
 - nRF51822 Development Kit version 2.1.0 or later
 
 The project may need modifications to work with other versions or other boards. 
-
-To compile it, clone the repository in the nrf51822/Board/pca10001/s110/ folder.
 
 About this project
 ------------------

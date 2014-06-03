@@ -1,7 +1,9 @@
-Watchdog examples and RESETREAS register test
+watchdog-simple-example
 ==================
 
- This project contains code examples that show watchdog functionality and test of RESETREAS register.
+ This file shows simple watchdog functionality.
+
+ See main.c for a detailed description of the application behavior. 
  
 Requirements
 ------------
@@ -9,8 +11,6 @@ Requirements
 - nRF51822 Development Kit version 2.1.0 or later
 
 The project may need modifications to work with other versions or other boards. 
-
-To compile it, clone the repository in the \nrf51822\Board\nrf6310\ folder.
 
 About this project
 ------------------

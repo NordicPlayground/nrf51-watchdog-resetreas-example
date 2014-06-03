@@ -1,4 +1,4 @@
-nrf51-watchdog-resetreas-example
+watchdog-resetreas-example
 ==================
 
 This example demonstrates the use of the watchdog, the system off power-down mode and the RESETREAS register, that can be used to determine the reset reason (i.e. whether the chip was reset from system off, from power-on, reset by the watchdog or similar. 
@@ -11,8 +11,6 @@ Requirements
 - nRF51822 Development Kit version 2.1.0 or later
 
 The project may need modifications to work with later versions or other boards. 
-
-To compile it, clone the repository in the nrf51822/Board/nrf6310/ folder.
 
 About this project
 ------------------
