@@ -1,21 +1,9 @@
-ble_app_template_with_Watchdog_timer
+nrf51-watchdog-resetreas-example
 ==================
 
- * This file shows watchdog functionality with the softdevice enabled.
- * It is an add on to the ble_app_template example in the nRF51 SDK. If you want 
- * to see what has been added to the original ble_app_template to obtain watchdog
- * functionality, you can compare the main.c file with the original file in the 
- * nRF51 SDK, with e.g. WinDiff.
- *
- * LED4 is toggled at startup. Watchdog is set to 3 seconds and will cause
- * a reset after that time. The watchdog can be reloaded by pressing BUTTON3,
- * to prevent reset. LED3 will blink to indicate the button press.
- * Note that the watchdog does not work in debug mode. Since the chip will start up in
- * debug mode after flashing, the watchdog will only work after a powercycle.
- *
- * Note: To demonstrate watchdog functionality, the powermanage() function in the main
- * loop has been commented out in this example which will cause higher current
- * consumption.
+ This file shows watchdog functionality with the softdevice enabled.
+
+ See main.c for a detailed description of the application behavior. 
  
 Requirements
 ------------
