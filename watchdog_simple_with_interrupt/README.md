@@ -1,4 +1,4 @@
-Watchdog simple example
+Watchdog simple example with interrupt
 ==================
 
  This project contains code examples that show watchdog functionality, compatible with either nRF51 or nRF52 ICs.
