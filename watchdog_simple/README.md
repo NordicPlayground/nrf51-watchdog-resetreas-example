@@ -10,7 +10,7 @@ Requirements
 
 The project may need modifications to work with other versions or other boards. 
 
-To compile it, or clone the repository into \nRF5_SDK_11.0.0_89a8197\examples\ folder, or place any project folder (e.g. watchdog_simple folder) into \nRF5_SDK_11.0.0_89a8197\examples\peripheral\ folder.
+To compile it, place the project folder (e.g. watchdog_simple folder) into \nRF5_SDK_11.0.0_89a8197\examples\peripheral\ folder.
 
 Furter exmplanation on how the examples work is documented at the top of the main file in the example in question.
 
